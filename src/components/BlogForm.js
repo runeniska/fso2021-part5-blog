@@ -47,7 +47,6 @@ const BlogForm = ({ handleSubmit }) => {
         </div>
         <button type="submit">create</button>
       </form>
-      <br />
     </div>
   )
 }

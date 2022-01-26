@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 import LoginForm from './components/LoginForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -12,6 +13,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState({ text: '', success: true })
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
@@ -67,6 +69,7 @@ const App = () => {
   }
 
   const createBlog = async (blog) => {
+    blogFormRef.current.toggleVisibility()
     const obj = await blogService.create(blog)
     const userObject = {
       username: obj.user.username,
@@ -115,7 +118,9 @@ const App = () => {
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
-      <BlogForm handleSubmit={createBlog} />
+      <Togglable buttonLabel='Create new blog' ref={blogFormRef}>
+        <BlogForm handleSubmit={createBlog} />
+      </Togglable>
     </div>
   )
 }
