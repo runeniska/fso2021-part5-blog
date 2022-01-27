@@ -54,6 +54,28 @@ const App = () => {
     }
   }
 
+  const handleLikeUpdate = async (blog) => {
+    try {
+      const formattedLikedBlog = {
+        user: blog.user.id,
+        likes: blog.likes + 1,
+        author: blog.author,
+        title: blog.title,
+        url: blog.url
+      }
+      const updatedBlog = await blogService.update(blog.id, formattedLikedBlog)
+      setBlogs(blogs.map(b => b.id !== blog.id ? b : { ...updatedBlog, user: blog.user }))
+    } catch (error) {
+      setMessage(
+        {
+          text: 'Like update failed',
+          success: false
+        }
+      )
+      setTimeout(() => setMessage(''), 5000)
+    }
+  }
+
   const handleLogout = () => {
     blogService.setToken(null)
     setUser(null)
@@ -116,7 +138,7 @@ const App = () => {
       </div>
       <br />
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} addLike={handleLikeUpdate} />
       )}
       <Togglable buttonLabel='Create new blog' ref={blogFormRef}>
         <BlogForm handleSubmit={createBlog} />
