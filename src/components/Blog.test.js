@@ -14,13 +14,9 @@ describe('<Blog />', () => {
       username: 'username'
     }
   }
-  let component
-
-  beforeEach(() => {
-    component = render(<Blog blog={blog} />)
-  })
 
   test('renders title and author but no url or likes by default', () => {
+    const component = render(<Blog blog={blog} />)
     expect(component.container).toHaveTextContent('Title')
     expect(component.container).toHaveTextContent('Title')
     expect(component.container).not.toHaveTextContent('www.author.com')
@@ -28,9 +24,23 @@ describe('<Blog />', () => {
   })
 
   test('shows url and likes when blog is expanded', () => {
+    const component = render(<Blog blog={blog} />)
     const button = component.getByText('view')
     fireEvent.click(button)
     expect(component.container).toHaveTextContent('www.author.com')
     expect(component.container).toHaveTextContent('100')
+  })
+
+  test('calls like handler twice when like button is clicked twice', () => {
+    const mockHandler = jest.fn()
+    const component = render(<Blog blog={blog} addLike={mockHandler}/>)
+    const button = component.getByText('view')
+    fireEvent.click(button)
+
+    // The blog is expanded
+    const likeButton = component.getByText('like')
+    fireEvent.click(likeButton)
+    fireEvent.click(likeButton)
+    expect(mockHandler.mock.calls).toHaveLength(2)
   })
 })
