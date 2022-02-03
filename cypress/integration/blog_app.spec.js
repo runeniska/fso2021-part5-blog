@@ -21,10 +21,10 @@ describe('Blog app', function() {
       cy.get('#username').type('user123')
       cy.get('#password').type('user123')
       cy.get('#login-button').click()
+      cy.get('#logout-button').click()
     })
 
     it('fails with wrong credentials', function() {
-      cy.get('#logout-button').click()
       cy.get('#username').type('wrong_username')
       cy.get('#password').type('wrong_password')
       cy.get('#login-button').click()
@@ -32,7 +32,28 @@ describe('Blog app', function() {
         .should('contain', 'Wrong username or password')
         .and('have.css', 'color', 'rgb(255, 0, 0)')
         .and('have.css', 'border-style', 'solid')
-
     })
   })
+
+  describe('When logged in', function() {
+    beforeEach(function() {
+      cy.get('#username').type('user123')
+      cy.get('#password').type('user123')
+      cy.get('#login-button').click()
+    })
+
+    it('a blog can be created', function() {
+      cy.contains('Create new blog').click()
+      cy.get('#title').type('The Awesome Story')
+      cy.get('#author').type('Author X')
+      cy.get('#url').type('http://localhost:3000')
+      cy.get('#create-button').click()
+      cy.get('.success')
+        .should('contain', 'A new blog The Awesome Story by Author X added')
+        .and('have.css', 'color', 'rgb(0, 128, 0)')
+        .and('have.css', 'border-style', 'solid')
+      cy.contains('The Awesome Story Author X')
+    })
+  })
+
 })
