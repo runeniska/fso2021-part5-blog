@@ -152,7 +152,7 @@ const App = () => {
       <Notification message={message.text} success={message.success} />
       <div>
         {user.name} logged in
-        <button onClick={() => handleLogout()}>logout</button>
+        <button id='logout-button' onClick={() => handleLogout()}>logout</button>
       </div>
       <br />
       {blogs
