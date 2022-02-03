@@ -67,7 +67,7 @@ describe('Blog app', function() {
       cy.contains('likes 1')
     })
 
-    it('a blog can be liked', function() {
+    it('a blog can be deleted', function() {
       cy.contains('Create new blog').click()
       cy.get('#title').type('The Awesome Story')
       cy.get('#author').type('Author X')
@@ -75,8 +75,7 @@ describe('Blog app', function() {
       cy.get('#create-button').click()
       cy.contains('view').click()
       cy.contains('remove').click()
-      // The success notification including the text 'The Awesome Story' lasts 5000ms
-      cy.get('html', { timeout: 6000 }).should('not.contain', 'The Awesome Story')
+      cy.get('html').should('not.contain', 'The Awesome Story Author X')
     })
 
     it('the blog list is ordered by likes', function() {
