@@ -67,7 +67,7 @@ describe('Blog app', function() {
       cy.contains('likes 1')
     })
 
-    it.only('a blog can be liked', function() {
+    it('a blog can be liked', function() {
       cy.contains('Create new blog').click()
       cy.get('#title').type('The Awesome Story')
       cy.get('#author').type('Author X')
@@ -77,6 +77,47 @@ describe('Blog app', function() {
       cy.contains('remove').click()
       // The success notification including the text 'The Awesome Story' lasts 5000ms
       cy.get('html', { timeout: 6000 }).should('not.contain', 'The Awesome Story')
+    })
+
+    it('the blog list is ordered by likes', function() {
+      // Create first blog
+      cy.contains('Create new blog').click()
+      cy.get('#title').type('The Awesome Story')
+      cy.get('#author').type('Author X')
+      cy.get('#url').type('http://localhost:3000')
+      cy.get('#create-button').click()
+      cy.contains('view').click()
+      // Create second blog
+      cy.contains('Create new blog').click()
+      cy.get('#title').type('The Second Blog')
+      cy.get('#author').type('Someone Else')
+      cy.get('#url').type('http://someinvalidurl.com')
+      cy.get('#create-button').click()
+      cy.contains('view').click()
+      /* Ensure that 'The Awesome Story' is before the 'The Second Blog'
+       * and the likes are 0 for both after creation
+       */
+      cy.get('.blog').then(blogs => {
+        expect(blogs[0]).to.contain.text('The Awesome Story')
+        expect(blogs[0]).to.contain.text('likes 0')
+        expect(blogs[1]).to.contain.text('The Second Blog')
+        expect(blogs[1]).to.contain.text('likes 0')
+      })
+      // Like the second blog to reorder the two blogs
+      cy.contains('The Second Blog Someone Else')
+        .contains('like')
+        .click()
+      // Wait for the like to be updated
+      cy.contains('likes 1')
+      /* Ensure that 'The Second Blog' is before the 'The Awesome Story'
+       * as it has more likes
+       */
+      cy.get('.blog').then(blogs => {
+        expect(blogs[0]).to.contain.text('The Second Blog')
+        expect(blogs[0]).to.contain.text('likes 1')
+        expect(blogs[1]).to.contain.text('The Awesome Story')
+        expect(blogs[1]).to.contain.text('likes 0')
+      })
     })
   })
 
