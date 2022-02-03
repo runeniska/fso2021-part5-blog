@@ -37,9 +37,12 @@ describe('Blog app', function() {
 
   describe('When logged in', function() {
     beforeEach(function() {
-      cy.get('#username').type('user123')
-      cy.get('#password').type('user123')
-      cy.get('#login-button').click()
+      cy.request('POST', 'http://localhost:3003/api/login', {
+        username: 'user123', password: 'user123'
+      }).then(response => {
+        localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
+        cy.visit('http://localhost:3000')
+      })
     })
 
     it('a blog can be created', function() {
@@ -119,5 +122,4 @@ describe('Blog app', function() {
       })
     })
   })
-
 })
