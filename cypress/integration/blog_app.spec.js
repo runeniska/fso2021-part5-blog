@@ -54,6 +54,18 @@ describe('Blog app', function() {
         .and('have.css', 'border-style', 'solid')
       cy.contains('The Awesome Story Author X')
     })
+
+    it('a blog can be liked', function() {
+      cy.contains('Create new blog').click()
+      cy.get('#title').type('The Awesome Story')
+      cy.get('#author').type('Author X')
+      cy.get('#url').type('http://localhost:3000')
+      cy.get('#create-button').click()
+      cy.contains('view').click()
+      cy.contains('likes 0')
+      cy.contains('like').click()
+      cy.contains('likes 1')
+    })
   })
 
 })
