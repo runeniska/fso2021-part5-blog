@@ -37,12 +37,7 @@ describe('Blog app', function() {
 
   describe('When logged in', function() {
     beforeEach(function() {
-      cy.request('POST', 'http://localhost:3003/api/login', {
-        username: 'user123', password: 'user123'
-      }).then(response => {
-        localStorage.setItem('loggedBlogappUser', JSON.stringify(response.body))
-        cy.visit('http://localhost:3000')
-      })
+      cy.login({ username: 'user123', password: 'user123' })
     })
 
     it('a blog can be created', function() {
@@ -59,11 +54,11 @@ describe('Blog app', function() {
     })
 
     it('a blog can be liked', function() {
-      cy.contains('Create new blog').click()
-      cy.get('#title').type('The Awesome Story')
-      cy.get('#author').type('Author X')
-      cy.get('#url').type('http://localhost:3000')
-      cy.get('#create-button').click()
+      cy.createBlog({
+        title: 'The Awesome Story',
+        author: 'Author X',
+        url: 'http://localhost:3000'
+      })
       cy.contains('view').click()
       cy.contains('likes 0')
       cy.contains('like').click()
@@ -71,11 +66,11 @@ describe('Blog app', function() {
     })
 
     it('a blog can be deleted', function() {
-      cy.contains('Create new blog').click()
-      cy.get('#title').type('The Awesome Story')
-      cy.get('#author').type('Author X')
-      cy.get('#url').type('http://localhost:3000')
-      cy.get('#create-button').click()
+      cy.createBlog({
+        title: 'The Awesome Story',
+        author: 'Author X',
+        url: 'http://localhost:3000'
+      })
       cy.contains('view').click()
       cy.contains('remove').click()
       cy.get('html').should('not.contain', 'The Awesome Story Author X')
@@ -83,18 +78,18 @@ describe('Blog app', function() {
 
     it('the blog list is ordered by likes', function() {
       // Create first blog
-      cy.contains('Create new blog').click()
-      cy.get('#title').type('The Awesome Story')
-      cy.get('#author').type('Author X')
-      cy.get('#url').type('http://localhost:3000')
-      cy.get('#create-button').click()
-      cy.contains('view').click()
+      cy.createBlog({
+        title: 'The Awesome Story',
+        author: 'Author X',
+        url: 'http://localhost:3000'
+      })
       // Create second blog
-      cy.contains('Create new blog').click()
-      cy.get('#title').type('The Second Blog')
-      cy.get('#author').type('Someone Else')
-      cy.get('#url').type('http://someinvalidurl.com')
-      cy.get('#create-button').click()
+      cy.createBlog({
+        title: 'The Second Blog',
+        author: 'Someone Else',
+        url: 'http://someinvalidurl.com'
+      })
+      cy.contains('view').click()
       cy.contains('view').click()
       /* Ensure that 'The Awesome Story' is before the 'The Second Blog'
        * and the likes are 0 for both after creation
